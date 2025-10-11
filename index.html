@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>L.E.O. - Lucha Estudiantil Organizada</title>
+<style>
+  :root {
+  --rosa-intenso: #ff007f;
+  --rosa-medio: #ff69b4;
+  --rosa-claro: #ffc0cb;
+  --menta: #000000;
+  --amarillo: #fff3b0;
+  --gris: #f5f5f5;
+  --texto: #333;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top left, var(--rosa-intenso), var(--rosa-claro), var(--menta));
+  color: var(--texto);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Encabezado con animación de destellos */
+header {
+  background: linear-gradient(135deg, var(--rosa-intenso));
+  color: rgb(255, 255, 255);
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5em;
+  text-shadow:
+    0 0 10px var(--rosa-intenso),
+    0 0 20px var(--rosa-medio),
+    0 0 30px var(--rosa-claro);
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
+  }
+  50% {
+    text-shadow: 0 0 20px var(--rosa-claro), 0 0 30px var(--rosa-intenso), 0 0 40px var(--rosa-medio);
+  }
+  100% {
+    text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
+  }
+}
+
+section {
+  padding: 40px 20px;
+  background-color: var(--gris);
+  margin: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: var(--rosa-intenso);
+  border-bottom: 3px solid var(--rosa-intenso);
+  padding-bottom: 10px;
+  text-align: center;
+  font-size: 1.8em;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.card {
+  background-color: white;
+  border-left: 10px solid var(--rosa-medio);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--rosa-intenso);
+  font-size: 1.2em;
+}
+
+.card p {
+  margin: 8px 0;
+  font-size: 0.95em;
+}
+
+/* Aura animada en imágenes */
+.aura-img {
+  width: 200px;
+  border-radius: 10%;
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 0 20px rgba(255, 0, 127, 0.6),
+    0 0 40px rgba(255, 105, 180, 0.5),
+    0 0 60px rgba(255, 192, 203, 0.4),
+    0 0 80px rgba(255, 182, 193, 0.3);
+  animation: pulseAura 4s infinite ease-in-out;
+}
+
+@keyframes pulseAura {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Sección lateral fija */
+.sidebar {
+  position: fixed;
+  top: 120px;
+  left: 0;
+  width: 220px;
+  background: linear-gradient(135deg, var(--rosa-claro), var(--menta));
+  padding: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.sidebar h3 {
+  color: white; /* ← cambiado a blanco */
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.sidebar a {
+  display: block;
+  margin: 10px 0;
+  color: white; /* ← cambiado a blanco */
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-left: 5px solid var(--rosa-medio);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.sidebar a:hover {
+  background-color: var(--amarillo);
+  color: var(--rosa-intenso); /* ← mantiene contraste al hacer hover */
+}
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  .card-container {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 10px 15px;
+    text-align: center;
+  }
+
+  .sidebar h3 {
+    font-size: 1em;
+  }
+
+  .sidebar a {
+    display: inline-block;
+    margin: 5px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    border-left: none;
+    border-bottom: 3px solid var(--rosa-medio);
+  }
+
+  section {
+    margin: 10px;
+    padding: 20px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.6em;
+  }
+
+  .card h3 {
+    font-size: 1em;
+  }
+
+  .card p {
+    font-size: 0.85em;
+  }
+
+  .sidebar a {
+    font-size: 0.8em;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="sidebar">
+  <h3>Explora</h3>
+  <a href="propuestas.html">Propuestas</a>
+  <a href="iniciativas.html">Iniciativas</a>
+  <a href="campañas.html">Campañas</a>
+  <a href="sentido.html">Sentido</a>
+</div>
+
+  <header>
+    <h1>L.E.O. - Lucha Estudiantil Organizada</h1>
+    <p>Comité Estudiantil del Politécnico Ingeniero Jorge Matute Remus</p>
+  </header>
+
+  <section><center>
+    <h2>Candidatos</h2>
+    <div class="card-container">
+      <div class="card">
+        <h3>Naomi Alejandra Ortega Pérez</h3>
+        <p>Candidata a presidencia del turno matutino</p>
+        <p><strong>Carrera:</strong> Bachillerato Tecnológico en Administración</p>
+        <p><strong>Propuesta:</strong> Espacios seguros y redes de apoyo estudiantil</p>
+        <img class="aura-img" src="images/naomi.png" >
+      </div>
+      <div class="card">
+        <h3>Lia</h3>
+        <p>Candidata a presidencia del turno vespertino</p>
+        <p><strong>Carrera:</strong> Arquitectura</p>
+        <p><strong>Propuesta:</strong> Talleres creativos y activismo urbano</p>
+      </div>
+    </div></center>
+  </section>
+
+  <section>
+    <h2>Secretarios y Talleristas</h2>
+    <div class="card-container">
+      <div class="card">
+        <h3>Secretario Martin Emiliano Medina Medina</h3>
+        <p><strong>Área:</strong> Publicidad e Imagen</p>
+        <img src="images/emi.png" alt="" class="aura-img" >
+      </div>
+      <div class="card">
+        <h3>Secretaria María</h3>
+        <p><strong>Área:</strong> Eventos</p>
+        <img class="aura-img" src="images/mar.png" alt="" >
+      </div>
+      <div class="card">
+        <h3>Secretario Javier Antuna  Montañez</h3>
+        <p><strong>Área:</strong> Redes</p>
+        <img class="aura-img" src="images/javier." alt="">
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
