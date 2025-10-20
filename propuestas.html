@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Propuestas - L.E.O.</title>
+  <style>
+    :root {
+      --rosa-intenso: #ff007f;
+      --rosa-medio: #ff69b4;
+      --rosa-claro: #ffc0cb;
+      --menta: #000000;
+      --amarillo: #fff3b0;
+      --gris: #f5f5f5;
+      --texto: #333;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, var(--rosa-intenso), var(--rosa-claro), var(--menta));
+      color: var(--texto);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--rosa-intenso));
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      text-shadow:
+        0 0 10px var(--rosa-intenso),
+        0 0 20px var(--rosa-medio),
+        0 0 30px var(--rosa-claro);
+      animation: shimmer 3s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% {
+        text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
+      }
+      50% {
+        text-shadow: 0 0 20px var(--rosa-claro), 0 0 30px var(--rosa-intenso), 0 0 40px var(--rosa-medio);
+      }
+      100% {
+        text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
+      }
+    }
+
+    section {
+      padding: 40px 20px;
+      background-color: var(--gris);
+      margin: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: var(--rosa-intenso);
+      border-bottom: 3px solid var(--rosa-intenso);
+      padding-bottom: 10px;
+      text-align: center;
+      font-size: 1.8em;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background-color: white;
+      border-left: 10px solid var(--rosa-medio);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: var(--rosa-intenso);
+      font-size: 1.2em;
+    }
+
+    .card p {
+      margin: 8px 0;
+      font-size: 0.95em;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 120px;
+      left: 0;
+      width: 220px;
+      background: linear-gradient(135deg, var(--rosa-claro), var(--menta));
+      padding: 20px;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .sidebar h3 {
+      color: white;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .sidebar a {
+      display: block;
+      margin: 10px 0;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-left: 5px solid var(--rosa-medio);
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: var(--amarillo);
+      color: var(--rosa-intenso);
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2em;
+      }
+
+      h2 {
+        font-size: 1.5em;
+      }
+
+      .card-container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 10px 15px;
+        text-align: center;
+      }
+
+      .sidebar h3 {
+        font-size: 1em;
+      }
+
+      .sidebar a {
+        display: inline-block;
+        margin: 5px;
+        padding: 6px 10px;
+        font-size: 0.9em;
+        border-left: none;
+        border-bottom: 3px solid var(--rosa-medio);
+      }
+
+      section {
+        margin: 10px;
+        padding: 20px 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.6em;
+      }
+
+      .card h3 {
+        font-size: 1em;
+      }
+
+      .card p {
+        font-size: 0.85em;
+      }
+
+      .sidebar a {
+        font-size: 0.8em;
+      }
+    }
+    /* Botón flotante */
+#toggleSidebar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background-color: var(--rosa-intenso);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+}
+
+#toggleSidebar:hover {
+  background-color: var(--rosa-medio);
+}
+
+/* Sidebar oculto por defecto en pantallas grandes */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 220px;
+  height: 100%;
+  background: linear-gradient(135deg, var(--rosa-claro), var(--menta));
+  padding: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  transition: left 0.4s ease;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar h3 {
+  color: white;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.sidebar a {
+  display: block;
+  margin: 10px 0;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-left: 5px solid var(--rosa-medio);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.sidebar a:hover {
+  background-color: var(--amarillo);
+  color: var(--rosa-intenso);
+}
+
+  </style>
+</head>
+<body>
+<!-- Botón flotante para abrir el menú -->
+<button id="toggleSidebar" onclick="toggleSidebar()">☰ Menú</button>
+
+<!-- Sidebar colapsable -->
+<div class="sidebar" id="sidebar">
+  <h3>Explora</h3>
+  <a href="index.html">Inicio</a>
+  <a href="propuestas.html">Propuestas</a>
+  <a href="iniciativas.html">Iniciativas</a>
+  <a href="campañas.html">Campañas</a>
+  <a href="sentido.html">Sentido</a>
+</div>
+
+
+  <header>
+    <h1>Propuestas Estudiantiles</h1>
+    <p>Transformando ideas en acciones colectivas</p>
+  </header>
+
+  <section>
+  Contáctanos en nuestro instagram para más información sobre estas propuestas y cómo puedes participar activamente en su desarrollo e implementación.
+  <a href="https://www.instagram.com/leopolimatute/" target="_blank" rel="noopener noreferrer">Instagram aquí</a>
+</section>
+
+  <section>
+    <h2>Ejes Estratégicos</h2>
+    <div class="card-container">
+      <div class="card">
+        <h3>🌱 Bienestar y Espacios Seguros</h3>
+        <p><strong>Descripción:</strong> Crear redes de apoyo emocional, espacios de escucha y protocolos contra violencia escolar.</p>
+        <p><strong>Objetivos:</strong> Fomentar la salud mental, prevenir el acoso y fortalecer la comunidad estudiantil.</p>
+        <p><strong>Responsable:</strong> Naomi</p>
+      </div>
+
+      <div class="card">
+        <h3>🎨 Cultura y Activismo Urbano</h3>
+        <p><strong>Descripción:</strong> Talleres de arte, muralismo, diseño gráfico y activismo visual para expresar demandas estudiantiles.</p>
+        <p><strong>Objetivos:</strong> Visibilizar problemáticas, fortalecer identidad colectiva y ocupar el espacio público.</p>
+        <p><strong>Responsable:</strong> Lia</p>
+      </div>
+
+      <div class="card">
+        <h3>📢 Comunicación y Redes</h3>
+        <p><strong>Descripción:</strong> Estrategias digitales, campañas informativas y manejo de redes sociales con enfoque creativo.</p>
+        <p><strong>Objetivos:</strong> Difundir propuestas, conectar con estudiantes y amplificar voces del comité.</p>
+        <p><strong>Responsable:</strong> Javier</p>
+      </div>
+
+      <div class="card">
+        <h3>🎭 Eventos y Participación</h3>
+        <p><strong>Descripción:</strong> Organización de ferias, asambleas, convivencias y espacios de expresión estudiantil.</p>
+        <p><strong>Objetivos:</strong> Fortalecer la participación, generar comunidad y celebrar la diversidad estudiantil.</p>
+        <p><strong>Responsable:</strong> María</p>
+      </div>
+
+      <div class="card">
+        <h3>🧠 Formación y Herramientas</h3>
+        <p><strong>Descripción:</strong> Cursos, charlas y recursos sobre derechos estudiantiles, gestión colectiva y liderazgo.</p>
+        <p><strong>Objetivos:</strong> Empoderar a estudiantes con conocimiento práctico.
+        </p>
+        <p><strong>Responsable:</strong> Naomi</p>                
+
+        </div>  
+
+
+
+    </div>
+    </section>
+
+    <section>
+    <h2>🛋️ Sala de Estar para Clases Libres</h2>
+    <div class="card">
+      <h3>Descanso con dignidad</h3>
+      <p>Habilitación de un espacio cómodo con sillones, libros, música y café para estudiantes que esperan entre clases. Un lugar para relajarse, estudiar o convivir.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🌟 Programa de Reconocimiento Estudiantil</h2>
+    <div class="card">
+      <h3>Celebrando el esfuerzo y la participación</h3>
+      <p>Implementación de un sistema de reconocimientos mensuales para estudiantes destacados en áreas académicas, deportivas y culturales. Incentivos como becas, material escolar o experiencias exclusivas.</p>
+    </div>
+  </section>
+<section>
+    <h2>🤝 Red de Apoyo entre Pares</h2>
+    <div class="card">
+      <h3>Juntos somos más fuertes</h3>
+      <p>Creación de un programa donde estudiantes voluntarios brindan apoyo académico, emocional y social a sus compañeros. Talleres de tutoría, grupos de estudio y actividades de integración.</p>
+    </div>
+</section>
+
+<section>
+    <h2>🌍 Campañas de Concientización Ambiental</h2>
+    <div class="card">
+      <h3>Por un campus más verde</h3>
+      <p>Lanzamiento de campañas para promover prácticas sostenibles dentro del campus, como reciclaje, reducción de residuos y uso responsable de recursos. Actividades como jornadas de limpieza y talleres ecológicos.</p>
+    </div>
+</section>
+
+
+
+<section>
+    <h2>💡 Estudio de Innovación Estudiantil</h2>
+    <div class="card">
+      <h3>Impulsando ideas creativas</h3>
+      <p>Establecimiento de un espacio dedicado a la incubación de proyectos estudiantiles innovadores. Recursos, mentoría y apoyo para desarrollar iniciativas que beneficien a la comunidad educativa.</p>
+    </div>
+</section>
+
+
+    <script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+  }
+</script>
+</body>     
