@@ -1,346 +1,874 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Iniciativas - L.E.O.</title>
-  <style>
-    :root {
-      --rosa-intenso: #ff007f;
-      --rosa-medio: #ff69b4;
-      --rosa-claro: #ffc0cb;
-      --menta: #000000;
-      --amarillo: #fff3b0;
-      --gris: #f5f5f5;
-      --texto: #333;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iniciativas - L.E.O.</title>
+<style>
+  :root {
+    --naranja-fuego: #ff5a00;
+    --naranja-intenso: #ff7a18;
+    --naranja-ambar: #ffa600;
+    --naranja-suave: #ffd29b;
+    --carbon: #140a04;
+    --carbon-2: #23120a;
+    --humo: rgba(255, 255, 255, 0.06);
+    --texto: #f6ede6;
+    --texto-tenue: #d9c3b2;
+    --borde: rgba(255, 138, 30, 0.35);
+    --sombra: 0 18px 50px rgba(0, 0, 0, 0.55);
+    --radio: 22px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--texto);
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(255, 122, 24, 0.35), transparent 60%),
+      radial-gradient(900px 600px at -10% 20%, rgba(255, 90, 0, 0.28), transparent 60%),
+      linear-gradient(160deg, var(--carbon), var(--carbon-2) 45%, #0b0503);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ---------- Fondo animado ---------- */
+  #lienzo {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .aurora {
+    position: fixed;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    animation: flotar 22s ease-in-out infinite alternate;
+  }
+  .aurora.a { background: var(--naranja-fuego); top: -20vmax; left: -15vmax; }
+  .aurora.b { background: var(--naranja-ambar); bottom: -25vmax; right: -15vmax; animation-delay: -7s; }
+  .aurora.c { background: #ff2e00; top: 40%; left: 55%; animation-delay: -13s; opacity: 0.22; }
+
+  @keyframes flotar {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(6vmax, -4vmax, 0) scale(1.18); }
+  }
+
+  /* ---------- Barra de progreso ---------- */
+  #progreso {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--naranja-fuego), var(--naranja-ambar), #fff3b0);
+    box-shadow: 0 0 18px var(--naranja-intenso);
+    z-index: 2000;
+    transition: width 0.1s linear;
+  }
+
+  /* ---------- Botón menú ---------- */
+  #toggleSidebar {
+    position: fixed;
+    top: 22px;
+    left: 22px;
+    z-index: 1100;
+    background: linear-gradient(135deg, var(--naranja-fuego), var(--naranja-ambar));
+    color: #1a0c04;
+    border: none;
+    padding: 12px 18px;
+    font-size: 1em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(255, 90, 0, 0.45);
+    transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.25s ease, filter 0.25s ease;
+  }
+  #toggleSidebar:hover { transform: translateY(-2px) scale(1.04); filter: brightness(1.08); box-shadow: 0 14px 34px rgba(255, 122, 24, 0.6); }
+  #toggleSidebar:active { transform: scale(0.97); }
+  #toggleSidebar::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 166, 0, 0.5);
+    animation: pulso 2.8s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulso {
+    0%   { transform: scale(1); opacity: 0.8; }
+    70%  { transform: scale(1.35); opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 268px;
+    height: 100%;
+    padding: 90px 22px 22px;
+    background: linear-gradient(180deg, rgba(35, 18, 10, 0.96), rgba(12, 6, 3, 0.96));
+    backdrop-filter: blur(14px);
+    border-right: 1px solid var(--borde);
+    border-top-right-radius: 28px;
+    border-bottom-right-radius: 28px;
+    box-shadow: 24px 0 60px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: left 0.55s cubic-bezier(.2,.9,.2,1);
+  }
+  .sidebar.open { left: 0; }
+
+  .sidebar h3 {
+    margin: 0 0 22px;
+    text-align: center;
+    font-size: 0.95em;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--naranja-ambar);
+  }
+
+  .sidebar a {
+    position: relative;
+    display: block;
+    margin: 12px 0;
+    padding: 12px 16px;
+    color: var(--texto);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-radius: 14px;
+    background: var(--humo);
+    border: 1px solid transparent;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-18px);
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  }
+  .sidebar.open a { animation: entraLink 0.5s forwards; }
+  .sidebar.open a:nth-child(2) { animation-delay: 0.08s; }
+  .sidebar.open a:nth-child(3) { animation-delay: 0.14s; }
+  .sidebar.open a:nth-child(4) { animation-delay: 0.20s; }
+  .sidebar.open a:nth-child(5) { animation-delay: 0.26s; }
+  .sidebar.open a:nth-child(6) { animation-delay: 0.32s; }
+  @keyframes entraLink {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .sidebar a::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--naranja-fuego), var(--naranja-ambar));
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+  }
+  .sidebar a:hover {
+    background: linear-gradient(90deg, rgba(255, 122, 24, 0.22), transparent);
+    border-color: var(--borde);
+    color: var(--naranja-ambar);
+    transform: translateX(6px);
+  }
+  .sidebar a:hover::before { transform: scaleY(1); transform-origin: top; }
+
+  #velo {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 1, 0.55);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    z-index: 900;
+  }
+  #velo.visible { opacity: 1; pointer-events: auto; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 130px 24px 96px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      conic-gradient(from 0deg, transparent 0 20%, rgba(255, 122, 24, 0.18) 35%, transparent 55%, rgba(255, 166, 0, 0.16) 75%, transparent 100%);
+    animation: girar 26s linear infinite;
+    z-index: -1;
+  }
+  @keyframes girar { to { transform: rotate(360deg); } }
+
+  .kicker {
+    display: inline-block;
+    padding: 8px 18px;
+    margin-bottom: 26px;
+    font-size: 0.78em;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--naranja-ambar);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background: rgba(255, 122, 24, 0.08);
+    animation: aparecer 1s 0.1s both;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 7vw, 5rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.05;
+    color: #ffb347;
+    filter: drop-shadow(0 0 28px rgba(255, 90, 0, 0.45));
+  }
+
+  header h1 .letra {
+    display: inline-block;
+    background: linear-gradient(100deg, #fff1df 0%, var(--naranja-ambar) 30%, var(--naranja-fuego) 55%, var(--naranja-ambar) 80%, #fff1df 100%);
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transform: translateY(40px) rotateX(-70deg);
+    animation:
+      caerLetra 0.8s cubic-bezier(.2,.9,.2,1) forwards,
+      brillo 6s linear infinite;
+  }
+  @keyframes brillo {
+    to { background-position: 250% center; }
+  }
+  @keyframes caerLetra {
+    to { opacity: 1; transform: translateY(0) rotateX(0); }
+  }
+
+  header .lema {
+    margin: 26px auto 0;
+    max-width: 680px;
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    color: var(--texto-tenue);
+    animation: aparecer 1.2s 0.9s both;
+  }
+
+  .linea-fuego {
+    width: min(520px, 70%);
+    height: 2px;
+    margin: 38px auto 0;
+    background: linear-gradient(90deg, transparent, var(--naranja-fuego), var(--naranja-ambar), transparent);
+    box-shadow: 0 0 24px var(--naranja-fuego);
+    animation: aparecer 1.2s 1.1s both;
+  }
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-hint {
+    display: block;
+    margin: 46px auto 0;
+    width: 26px;
+    height: 44px;
+    border: 2px solid var(--borde);
+    border-radius: 16px;
+    position: relative;
+    animation: aparecer 1.2s 1.3s both;
+  }
+  .scroll-hint::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 4px; height: 8px;
+    margin-left: -2px;
+    border-radius: 4px;
+    background: var(--naranja-ambar);
+    animation: rueda 1.8s ease-in-out infinite;
+  }
+  @keyframes rueda {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    60% { transform: translateY(16px); opacity: 0.1; }
+  }
+
+  /* ---------- Secciones ---------- */
+  main { position: relative; z-index: 1; padding-bottom: 60px; }
+
+  section {
+    max-width: 1080px;
+    margin: 34px auto;
+    padding: 46px 34px;
+    border-radius: var(--radio);
+    background: linear-gradient(160deg, rgba(38, 20, 11, 0.72), rgba(16, 8, 4, 0.72));
+    border: 1px solid var(--borde);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--sombra);
+    opacity: 0;
+    transform: translateY(46px);
+    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.9,.2,1);
+  }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  h2 {
+    margin: 0 0 30px;
+    text-align: center;
+    font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+    letter-spacing: 0.04em;
+    color: #fff4e6;
+  }
+  h2 span.sub {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.42em;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--naranja-intenso);
+  }
+  h2::after {
+    content: "";
+    display: block;
+    width: 90px;
+    height: 3px;
+    margin: 18px auto 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--naranja-fuego), var(--naranja-ambar));
+    box-shadow: 0 0 18px rgba(255, 122, 24, 0.7);
+  }
+
+  .card {
+    position: relative;
+    padding: 30px 30px 30px 34px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(255, 166, 0, 0.18);
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, var(--naranja-fuego), var(--naranja-ambar));
+    box-shadow: 0 0 22px rgba(255, 122, 24, 0.7);
+  }
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 138, 30, 0.22), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .card:hover {
+    border-color: rgba(255, 166, 0, 0.55);
+    box-shadow: 0 24px 60px rgba(255, 90, 0, 0.22);
+  }
+  .card:hover::after { opacity: 1; }
+
+  .card h3 {
+    margin: 0 0 12px;
+    font-size: 1.32em;
+    color: var(--naranja-ambar);
+    letter-spacing: 0.02em;
+  }
+  .card p {
+    margin: 0;
+    line-height: 1.75;
+    color: var(--texto-tenue);
+  }
+
+  .etiquetas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .etiquetas span {
+    padding: 6px 14px;
+    font-size: 0.78em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--naranja-suave);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background: rgba(255, 122, 24, 0.08);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  }
+  .etiquetas span:hover {
+    background: linear-gradient(135deg, var(--naranja-fuego), var(--naranja-ambar));
+    color: #1a0c04;
+    transform: translateY(-2px);
+  }
+
+  /* ---------- Contadores ---------- */
+  .metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    text-align: center;
+  }
+  .metrica {
+    padding: 26px 16px;
+    border-radius: 18px;
+    background: rgba(255, 122, 24, 0.07);
+    border: 1px solid var(--borde);
+    transition: transform 0.35s cubic-bezier(.2,.9,.2,1), box-shadow 0.35s ease;
+  }
+  .metrica:hover { transform: translateY(-8px); box-shadow: 0 20px 44px rgba(255, 90, 0, 0.25); }
+  .metrica b {
+    display: block;
+    font-size: 2.4em;
+    font-weight: 800;
+    background: linear-gradient(120deg, var(--naranja-ambar), var(--naranja-fuego));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .metrica small {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.8em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
+  }
+
+  /* ---------- Botón de acción ---------- */
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+  }
+  .cta p {
+    margin: 0;
+    max-width: 520px;
+    line-height: 1.75;
+    color: var(--texto-tenue);
+  }
+  .boton {
+    position: relative;
+    display: inline-block;
+    padding: 14px 30px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #1a0c04;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--naranja-fuego), var(--naranja-ambar));
+    box-shadow: 0 12px 32px rgba(255, 90, 0, 0.45);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(.2,.9,.2,1), box-shadow 0.3s ease, filter 0.3s ease;
+  }
+  .boton::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -140%;
+    width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: skewX(-20deg);
+    animation: destello 3.4s ease-in-out infinite;
+  }
+  @keyframes destello {
+    0%, 65% { left: -140%; }
+    100% { left: 160%; }
+  }
+  .boton:hover { transform: translateY(-3px) scale(1.04); filter: brightness(1.08); box-shadow: 0 18px 42px rgba(255, 122, 24, 0.6); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    padding: 50px 20px 70px;
+    text-align: center;
+    color: var(--texto-tenue);
+    font-size: 0.9em;
+    letter-spacing: 0.12em;
+  }
+  footer strong {
+    color: var(--naranja-ambar);
+    letter-spacing: 0.3em;
+  }
+
+  #irArriba {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1100;
+    width: 50px; height: 50px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #1a0c04;
+    font-size: 1.2em;
+    background: linear-gradient(135deg, var(--naranja-ambar), var(--naranja-fuego));
+    box-shadow: 0 12px 30px rgba(255, 90, 0, 0.45);
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.2,.9,.2,1);
+  }
+  #irArriba.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  #irArriba:hover { filter: brightness(1.1); transform: translateY(-4px) scale(1.06); }
+
+  ::selection { background: var(--naranja-fuego); color: #fff; }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #100804; }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--naranja-fuego), var(--naranja-ambar));
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 120px 18px 70px; }
+    section { margin: 20px 14px; padding: 32px 20px; }
+    .card { padding: 24px 22px 24px 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
     }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top left, var(--rosa-intenso), var(--rosa-claro), var(--menta));
-      color: var(--texto);
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    header {
-      background: linear-gradient(135deg, var(--rosa-intenso));
-      color: white;
-      padding: 40px 20px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5em;
-      text-shadow:
-        0 0 10px var(--rosa-intenso),
-        0 0 20px var(--rosa-medio),
-        0 0 30px var(--rosa-claro);
-      animation: shimmer 3s infinite linear;
-    }
-
-    @keyframes shimmer {
-      0% {
-        text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
-      }
-      50% {
-        text-shadow: 0 0 20px var(--rosa-claro), 0 0 30px var(--rosa-intenso), 0 0 40px var(--rosa-medio);
-      }
-      100% {
-        text-shadow: 0 0 10px var(--rosa-intenso), 0 0 20px var(--rosa-medio), 0 0 30px var(--rosa-claro);
-      }
-    }
-
-    section {
-      padding: 40px 20px;
-      background-color: var(--gris);
-      margin: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      color: var(--rosa-intenso);
-      border-bottom: 3px solid var(--rosa-intenso);
-      padding-bottom: 10px;
-      text-align: center;
-      font-size: 1.8em;
-    }
-
-    .card {
-      background-color: white;
-      border-left: 10px solid var(--rosa-medio);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-
-    .card h3 {
-      margin-top: 0;
-      color: var(--rosa-intenso);
-      font-size: 1.4em;
-    }
-
-    .card p {
-      margin: 10px 0;
-      font-size: 1em;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 120px;
-      left: 0;
-      width: 220px;
-      background: linear-gradient(135deg, var(--rosa-claro), var(--menta));
-      padding: 20px;
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
-      z-index: 1000;
-    }
-
-    .sidebar h3 {
-      color: white;
-      font-size: 1.2em;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .sidebar a {
-      display: block;
-      margin: 10px 0;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-left: 5px solid var(--rosa-medio);
-      border-radius: 8px;
-      transition: background 0.3s ease;
-    }
-
-    .sidebar a:hover {
-      background-color: var(--amarillo);
-      color: var(--rosa-intenso);
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: static;
-        width: 100%;
-        border-radius: 0;
-        box-shadow: none;
-        padding: 10px 15px;
-        text-align: center;
-      }
-
-      .sidebar a {
-        display: inline-block;
-        margin: 5px;
-        padding: 6px 10px;
-        font-size: 0.9em;
-        border-left: none;
-        border-bottom: 3px solid var(--rosa-medio);
-      }
-
-      section {
-        margin: 10px;
-        padding: 20px 10px;
-      }
-    }
-    /* Botón flotante */
-#toggleSidebar {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1100;
-  background-color: var(--rosa-intenso);
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  font-size: 1.2em;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-  transition: background 0.3s ease;
-}
-
-#toggleSidebar:hover {
-  background-color: var(--rosa-medio);
-}
-
-/* Sidebar oculto por defecto en pantallas grandes */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -250px;
-  width: 220px;
-  height: 100%;
-  background: linear-gradient(135deg, var(--rosa-claro), var(--menta));
-  padding: 20px;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 4px 0 12px rgba(0,0,0,0.1);
-  z-index: 1000;
-  transition: left 0.4s ease;
-}
-
-.sidebar.open {
-  left: 0;
-}
-
-.sidebar h3 {
-  color: white;
-  font-size: 1.2em;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.sidebar a {
-  display: block;
-  margin: 10px 0;
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 8px 12px;
-  border-left: 5px solid var(--rosa-medio);
-  border-radius: 8px;
-  transition: background 0.3s ease;
-}
-
-.sidebar a:hover {
-  background-color: var(--amarillo);
-  color: var(--rosa-intenso);
-}
-
-  </style>
+    section { opacity: 1; transform: none; }
+  }
+</style>
 </head>
 <body>
-<!-- Botón flotante para abrir el menú -->
-<button id="toggleSidebar" onclick="toggleSidebar()">☰ Menú</button>
+  <div id="progreso"></div>
+  <canvas id="lienzo"></canvas>
+  <div class="aurora a"></div>
+  <div class="aurora b"></div>
+  <div class="aurora c"></div>
 
-<!-- Sidebar colapsable -->
-<div class="sidebar" id="sidebar">
-  <h3>Explora</h3>
-  <a href="index.html">Inicio</a>
-  <a href="propuestas.html">Propuestas</a>
-  <a href="iniciativas.html">Iniciativas</a>
-  <a href="campañas.html">Campañas</a>
-  <a href="sentido.html">Sentido</a>
-</div>
+  <button id="toggleSidebar" aria-label="Abrir menú">☰ Menú</button>
+  <div id="velo"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <h3>Explora</h3>
+    <a href="index.html">Inicio</a>
+    <a href="propuestas.html">Propuestas</a>
+    <a href="iniciativas.html">Iniciativas</a>
+    <a href="campañas.html">Campañas</a>
+    <a href="sentido.html">Sentido</a>
+  </nav>
 
   <header>
-    <h1>Iniciativas Estudiantiles</h1>
-    <p>Activaciones deportivas y recreativas para fortalecer la comunidad</p>
+    <span class="kicker">Lucha Estudiantil Organizada · L.E.O.</span>
+    <h1 id="titulo">INICIATIVAS ESTUDIANTILES</h1>
+    <p class="lema">Activaciones deportivas, creativas y digitales para fortalecer la comunidad del poli.</p>
+    <div class="linea-fuego"></div>
+    <span class="scroll-hint" aria-hidden="true"></span>
   </header>
 
-<section>
-  <h2>💻 Asesorías y Mentorías de Diseño Web</h2>
-  <div class="card">
-    <h3>¡Construye tu sitio desde cero con apoyo experto!</h3>
-    <p><strong>Formato:</strong> Sesiones grupales y personalizadas.</p>
-    <p><strong>Temas:</strong> Diseño responsivo, CSS, estructura web, usabilidad.</p>
-    <p><strong>Objetivo:</strong> Empoderar a estudiantes para crear sus propios proyectos digitales.</p>
-    <p><strong>Impacto:</strong> Ya se han desarrollado sitios y apps funcionales con esta guía.</p>
-    <p><strong>Inscripción:</strong> Abierta a todos los turnos. Sin costo.</p>
-  </div>
-</section>
-
-<section>
-  <h2>🎨 Cultura Enriquecida</h2>
-  <div class="card">
-    <h3>¡Exprésate y conecta a través del arte!</h3>
-    <p><strong>Actividades:</strong> Cine estudiantil, zonas de graffiti, talleres de arte urbano.</p>
-    <p><strong>Objetivo:</strong> Fomentar un ambiente vibrante, diverso y creativo en el campus.</p>
-    <p><strong>Impacto:</strong> Alta participación y reconocimiento entre estudiantes.</p>
-    <p><strong>Acceso:</strong> Abierto a todos los turnos. Material incluido.</p>
-  </div>
-</section>
-
-<section>
-  <h2>🎵 Una por Piocha</h2>
-  <div class="card">
-    <h3>¡Haz tu canción desde cero, directo en el poli!</h3>
-    <p><strong>Formato:</strong> Producción de instrumental + grabación vocal.</p>
-    <p><strong>Objetivo:</strong> Impulsar la expresión musical estudiantil con recursos accesibles.</p>
-    <p><strong>Extras:</strong> Asesoría creativa y técnica durante la sesión.</p>
-    <p><strong>Inscripción:</strong> Cupo limitado. Regístrate con anticipación.</p>
-  </div>
-</section>
-
-<section>
-  <h2>Contáctanos</h2>
-  <p>Para más información sobre las inscripciones y detalles de los torneos, contáctanos a través de nuestro Instagram:</p>
-  <a href="https://www.instagram.com/leopolimatute/" target="_blank" rel="noopener noreferrer">Instagram aquí</a>
-</section>
-
-  <section>
-    <h2>🏆 Torneo Relámpago de Fútbol</h2>
-    <div class="card">
-      <h3>¡Arma tu equipo y compite!</h3>
-      <p><strong>Formato:</strong> Partidos cortos, eliminación directa.</p>
-      <p><strong>Objetivo:</strong> Fomentar el compañerismo, la actividad física y el espíritu competitivo.</p>
-      <p><strong>Inscripción:</strong> Abierta a todos los turnos. Equipos mixtos bienvenidos.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>🏀 Torneo Relámpago de Básquetbol</h2>
-    <div class="card">
-      <h3>¡Demuestra tu talento en la cancha!</h3>
-      <p><strong>Formato:</strong> 3 vs 3, con tiempos reducidos y rotación rápida.</p>
-      <p><strong>Objetivo:</strong> Promover el juego limpio, la estrategia y la convivencia.</p>
-      <p><strong>Premios:</strong> Reconocimiento a mejor equipo y jugador destacado.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>🏐 Torneo Relámpago de Voleibol</h2>
-    <div class="card">
-      <h3>¡Saca, bloquea y gana!</h3>
-      <p><strong>Formato:</strong> Equipos de 6, sets cortos, ambiente recreativo.</p>
-      <p><strong>Objetivo:</strong> Integrar estudiantes de diferentes áreas y turnos.</p>
-      <p><strong>Extras:</strong> Música en vivo y zona de hidratación.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>🎮 Implementación de e-Torneos (FIFA)</h2>
-    <div class="card">
-      <h3>¡Compite en el mundo virtual!</h3>
-      <p><strong>Plataforma:</strong> Consola PS5 / Xbox Series.</p>
-      <p><strong>Formato:</strong> Eliminación directa, partidos de 6 minutos.</p>
-      <p><strong>Objetivo:</strong> Incluir a gamers en las actividades estudiantiles y generar espacios de recreación digital.</p>
-      <p><strong>Premios:</strong> Trofeo digital, reconocimiento y sorpresas.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>🎮 Implementación de e-Torneos (Clash Royale)</h2>
-    <div class="card">
-      <h3>¡Compite en el mundo virtual!</h3>
-      <p><strong>Plataforma:</strong> Consola PS5 / Xbox Series.</p>
-      <p><strong>Formato:</strong> Eliminación directa, partidos de 6 minutos.</p>
-      <p><strong>Objetivo:</strong> Incluir a gamers en las actividades estudiantiles y generar espacios de recreación digital.</p>
-      <p><strong>Premios:</strong> Trofeo digital, reconocimiento y sorpresas.</p>
-    </div>
-  </section>
-  
+  <main>
     <section>
-    <h2>¡Únete a nuestras iniciativas!</h2>
-    <p>Participa en nuestros torneos relámpago y e-Torneos para fortalecer la comunidad estudiantil y disfrutar de momentos inolvidables. ¡Inscríbete ahora y sé parte de la diversión!</p>
+      <h2>💻 Asesorías y Mentorías de Diseño Web<span class="sub">Aprende creando</span></h2>
+      <div class="card">
+        <h3>¡Construye tu sitio desde cero con apoyo experto!</h3>
+        <p><strong>Formato:</strong> Sesiones grupales y personalizadas.</p>
+        <p><strong>Temas:</strong> Diseño responsivo, CSS, estructura web, usabilidad.</p>
+        <p><strong>Objetivo:</strong> Empoderar a estudiantes para crear sus propios proyectos digitales.</p>
+        <p><strong>Impacto:</strong> Ya se han desarrollado sitios y apps funcionales con esta guía.</p>
+        <p><strong>Inscripción:</strong> Abierta a todos los turnos. Sin costo.</p>
+        <div class="etiquetas"><span>CSS</span><span>Responsivo</span><span>Sin costo</span></div>
+      </div>
     </section>
 
+    <section>
+      <h2>🎨 Cultura Enriquecida<span class="sub">Arte en el campus</span></h2>
+      <div class="card">
+        <h3>¡Exprésate y conecta a través del arte!</h3>
+        <p><strong>Actividades:</strong> Cine estudiantil, zonas de graffiti, talleres de arte urbano.</p>
+        <p><strong>Objetivo:</strong> Fomentar un ambiente vibrante, diverso y creativo en el campus.</p>
+        <p><strong>Impacto:</strong> Alta participación y reconocimiento entre estudiantes.</p>
+        <p><strong>Acceso:</strong> Abierto a todos los turnos. Material incluido.</p>
+        <div class="etiquetas"><span>Cine</span><span>Graffiti</span><span>Arte urbano</span></div>
+      </div>
+    </section>
 
+    <section>
+      <h2>🎵 Una por Piocha<span class="sub">Tu canción</span></h2>
+      <div class="card">
+        <h3>¡Haz tu canción desde cero, directo en el poli!</h3>
+        <p><strong>Formato:</strong> Producción de instrumental + grabación vocal.</p>
+        <p><strong>Objetivo:</strong> Impulsar la expresión musical estudiantil con recursos accesibles.</p>
+        <p><strong>Extras:</strong> Asesoría creativa y técnica durante la sesión.</p>
+        <p><strong>Inscripción:</strong> Cupo limitado. Regístrate con anticipación.</p>
+        <div class="etiquetas"><span>Beats</span><span>Grabación</span><span>Cupo limitado</span></div>
+      </div>
+    </section>
 
-    <script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('open');
+    <section>
+      <h2>🏆 Torneo Relámpago de Fútbol<span class="sub">Cancha abierta</span></h2>
+      <div class="card">
+        <h3>¡Arma tu equipo y compite!</h3>
+        <p><strong>Formato:</strong> Partidos cortos, eliminación directa.</p>
+        <p><strong>Objetivo:</strong> Fomentar el compañerismo, la actividad física y el espíritu competitivo.</p>
+        <p><strong>Inscripción:</strong> Abierta a todos los turnos. Equipos mixtos bienvenidos.</p>
+        <div class="etiquetas"><span>Eliminación directa</span><span>Equipos mixtos</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🏀 Torneo Relámpago de Básquetbol<span class="sub">3 vs 3</span></h2>
+      <div class="card">
+        <h3>¡Demuestra tu talento en la cancha!</h3>
+        <p><strong>Formato:</strong> 3 vs 3, con tiempos reducidos y rotación rápida.</p>
+        <p><strong>Objetivo:</strong> Promover el juego limpio, la estrategia y la convivencia.</p>
+        <p><strong>Premios:</strong> Reconocimiento a mejor equipo y jugador destacado.</p>
+        <div class="etiquetas"><span>Juego limpio</span><span>Premios</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🏐 Torneo Relámpago de Voleibol<span class="sub">Saca y bloquea</span></h2>
+      <div class="card">
+        <h3>¡Saca, bloquea y gana!</h3>
+        <p><strong>Formato:</strong> Equipos de 6, sets cortos, ambiente recreativo.</p>
+        <p><strong>Objetivo:</strong> Integrar estudiantes de diferentes áreas y turnos.</p>
+        <p><strong>Extras:</strong> Música en vivo y zona de hidratación.</p>
+        <div class="etiquetas"><span>Equipos de 6</span><span>Música en vivo</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🎮 e-Torneos · FIFA<span class="sub">Arena digital</span></h2>
+      <div class="card">
+        <h3>¡Compite en el mundo virtual!</h3>
+        <p><strong>Plataforma:</strong> Consola PS5 / Xbox Series.</p>
+        <p><strong>Formato:</strong> Eliminación directa, partidos de 6 minutos.</p>
+        <p><strong>Objetivo:</strong> Incluir a gamers en las actividades estudiantiles y generar espacios de recreación digital.</p>
+        <p><strong>Premios:</strong> Trofeo digital, reconocimiento y sorpresas.</p>
+        <div class="etiquetas"><span>PS5</span><span>Xbox</span><span>6 minutos</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🎮 e-Torneos · Clash Royale<span class="sub">Arena móvil</span></h2>
+      <div class="card">
+        <h3>¡Compite en el mundo virtual!</h3>
+        <p><strong>Plataforma:</strong> Consola PS5 / Xbox Series.</p>
+        <p><strong>Formato:</strong> Eliminación directa, partidos de 6 minutos.</p>
+        <p><strong>Objetivo:</strong> Incluir a gamers en las actividades estudiantiles y generar espacios de recreación digital.</p>
+        <p><strong>Premios:</strong> Trofeo digital, reconocimiento y sorpresas.</p>
+        <div class="etiquetas"><span>Eliminación directa</span><span>Trofeo digital</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔥 Las iniciativas en números<span class="sub">Movimiento real</span></h2>
+      <div class="metricas">
+        <div class="metrica"><b class="contador" data-objetivo="8">0</b><small>Iniciativas</small></div>
+        <div class="metrica"><b class="contador" data-objetivo="5">0</b><small>Torneos</small></div>
+        <div class="metrica"><b class="contador" data-objetivo="3">0</b><small>Talleres</small></div>
+        <div class="metrica"><b class="contador" data-objetivo="100" data-sufijo="%">0</b><small>Gratuitas</small></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Contáctanos<span class="sub">Únete ahora</span></h2>
+      <div class="cta">
+        <p>Participa en nuestros torneos relámpago y e-Torneos para fortalecer la comunidad estudiantil. Para inscripciones y detalles, escríbenos en Instagram.</p>
+        <a class="boton" href="https://www.instagram.com/leopolimatute/" target="_blank" rel="noopener noreferrer">@leopolimatute</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>L.E.O.</strong><br><br>
+    Lucha Estudiantil Organizada · Politécnico Ingeniero Jorge Matute Remus
+  </footer>
+
+  <button id="irArriba" aria-label="Volver arriba">↑</button>
+
+<script>
+(function () {
+  'use strict';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Título letra por letra ---------- */
+  const titulo = document.getElementById('titulo');
+  const texto = titulo.textContent;
+  titulo.textContent = '';
+  [...texto].forEach((ch, i) => {
+    const s = document.createElement('span');
+    s.className = 'letra';
+    s.textContent = ch === ' ' ? '\u00A0' : ch;
+    s.style.animationDelay = (0.25 + i * 0.05) + 's';
+    titulo.appendChild(s);
+  });
+
+  /* ---------- Sidebar ---------- */
+  const sidebar = document.getElementById('sidebar');
+  const velo = document.getElementById('velo');
+  const boton = document.getElementById('toggleSidebar');
+
+  function toggleSidebar(forzarCerrar) {
+    const abrir = forzarCerrar ? false : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', abrir);
+    velo.classList.toggle('visible', abrir);
+    boton.innerHTML = abrir ? '✕ Cerrar' : '☰ Menú';
   }
-</script>
+  boton.addEventListener('click', () => toggleSidebar());
+  velo.addEventListener('click', () => toggleSidebar(true));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleSidebar(true); });
+  window.toggleSidebar = toggleSidebar;
 
+  /* ---------- Revelado al hacer scroll ---------- */
+  const secciones = document.querySelectorAll('section');
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entradas) => {
+      entradas.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+          if (e.target.querySelector('.contador')) animarContadores(e.target);
+        }
+      });
+    }, { threshold: 0.18 });
+    secciones.forEach(s => obs.observe(s));
+  } else {
+    secciones.forEach(s => s.classList.add('visible'));
+  }
+
+  /* ---------- Contadores ---------- */
+  function animarContadores(scope) {
+    scope.querySelectorAll('.contador').forEach(el => {
+      const objetivo = parseInt(el.dataset.objetivo, 10) || 0;
+      const sufijo = el.dataset.sufijo || '';
+      if (reduce) { el.textContent = objetivo + sufijo; return; }
+      const inicio = performance.now();
+      const dur = 1600;
+      (function paso(t) {
+        const p = Math.min((t - inicio) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(objetivo * ease) + sufijo;
+        if (p < 1) requestAnimationFrame(paso);
+      })(inicio);
+    });
+  }
+
+  /* ---------- Luz que sigue al cursor en las tarjetas ---------- */
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      card.style.setProperty('--mx', x + 'px');
+      card.style.setProperty('--my', y + 'px');
+      if (!reduce) {
+        const rx = ((y / r.height) - 0.5) * -6;
+        const ry = ((x / r.width) - 0.5) * 6;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      }
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+
+  /* ---------- Barra de progreso e ir arriba ---------- */
+  const progreso = document.getElementById('progreso');
+  const irArriba = document.getElementById('irArriba');
+  function alScroll() {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    progreso.style.width = p + '%';
+    irArriba.classList.toggle('visible', window.scrollY > 400);
+  }
+  window.addEventListener('scroll', alScroll, { passive: true });
+  alScroll();
+  irArriba.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* ---------- Parallax suave del header ---------- */
+  const header = document.querySelector('header');
+  if (!reduce) {
+    window.addEventListener('scroll', () => {
+      const y = Math.min(window.scrollY, 600);
+      header.style.transform = `translateY(${y * 0.18}px)`;
+      header.style.opacity = String(Math.max(1 - y / 620, 0));
+    }, { passive: true });
+  }
+
+  /* ---------- Partículas de brasa ---------- */
+  const lienzo = document.getElementById('lienzo');
+  const ctx = lienzo.getContext('2d');
+  let w, h, particulas = [];
+  const raton = { x: -9999, y: -9999 };
+
+  function dimensionar() {
+    w = lienzo.width = window.innerWidth;
+    h = lienzo.height = window.innerHeight;
+    const cantidad = Math.min(120, Math.round(w / 12));
+    particulas = Array.from({ length: cantidad }, () => nueva());
+  }
+  function nueva() {
+    return {
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 2.2 + 0.6,
+      vy: -(Math.random() * 0.5 + 0.15),
+      vx: (Math.random() - 0.5) * 0.3,
+      a: Math.random() * 0.6 + 0.2,
+      tono: 18 + Math.random() * 26
+    };
+  }
+  function pintar() {
+    ctx.clearRect(0, 0, w, h);
+    particulas.forEach(p => {
+      const dx = p.x - raton.x, dy = p.y - raton.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < 14000) {
+        const f = (14000 - d2) / 14000 * 0.9;
+        p.x += dx / Math.sqrt(d2 + 1) * f;
+        p.y += dy / Math.sqrt(d2 + 1) * f;
+      }
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+      if (p.x < -10) p.x = w + 10;
+      if (p.x > w + 10) p.x = -10;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.tono}, 100%, 58%, ${p.a})`;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = `hsla(${p.tono}, 100%, 55%, 0.9)`;
+      ctx.fill();
+    });
+    requestAnimationFrame(pintar);
+  }
+
+  window.addEventListener('resize', dimensionar);
+  window.addEventListener('mousemove', e => { raton.x = e.clientX; raton.y = e.clientY; });
+  dimensionar();
+  if (!reduce) pintar();
+})();
+</script>
 </body>
 </html>
